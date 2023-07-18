@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const Todo = require('./models/Todo');
 const { todo } = require('node:test');
 
-const port = 3000;
+const port = 3001;
 app.use(express.json());
 
 const connectionString =  
@@ -22,6 +22,12 @@ app.get('/to-do-app', async(req,res)=> {
 app.post('/to-do-app/new', async(req,res)=> {
     const task = await Todo.create(req.body)
     res.status(201).json({task})
+})
+
+app.delete('/to-do-app/delete/:id', async(req,res)=>{
+    const result = await Todo.findByIdAndDelete(req.params.id)
+
+    res.json(result)
 })
 
 app.listen(port, console.log(`server is running on port ${port}`))
