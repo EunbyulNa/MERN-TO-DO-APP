@@ -1,14 +1,16 @@
 const express = require('express');
 const app = express();
+const cors = require('cors');
 const mongoose = require('mongoose');
 const Todo = require('./models/Todo');
 const { todo } = require('node:test');
+require('dotenv').config()
 
 const port = 3001;
 app.use(express.json());
+app.use(cors());
 
-const connectionString =  
-'mongodb+srv://eun:1234@nodeexpress.cezylye.mongodb.net/toToApp?retryWrites=true&w=majority'
+const connectionString = process.env.MONGO_URI
 
 mongoose.connect(connectionString).then(()=> console.log('Connect to the DB..')).catch((err)=>console.log(err))
 
