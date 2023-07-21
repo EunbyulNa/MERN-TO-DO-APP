@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import TodoItem from "./TodoItem";
 const API_BASE= 'http://localhost:3001/to-do-app';
 
 
@@ -7,29 +8,38 @@ function App() {
   const [items, setItems] = useState([]);
   const [input, setInput] = useState("");
 
+
   useEffect(() => {
     GetTodos();
   }, []);
 
+  const handleChange = (e) => {
+     setInput(e.target.value)
+  }
 
-  const GetTodos = async () => {
-    try {
-      const response = await fetch(API_BASE);
-      if (!response.ok) {
-        throw new Error("Failed to fetch data from the server");
-      }
-      const data = await response.json();
-      setItems(data);
-      console.log(data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-  /*function addItem(){
-   setItems((item)=> {
-    return [...item, input]
-   })
-  }*/
+ const GetTodos = () => {
+  fetch(API_BASE)
+  .then(res => res.json())
+  .then(data => setItems(data))
+  .catch(err => console.log(err))
+ }
+
+  const addItem = async() => {
+   const data = await fetch(API_BASE + "/new", {
+    method: "POST",
+    headers: {
+      "content-type" : "application/json"
+    },
+    body: JSON.stringify({
+      name: input,
+      completed: false
+    })
+   }).then(res => res.json()) 
+   console.log(data)
+   await GetTodos()
+   setInput('')
+  }
+
 
   return (
     <div className="container">
@@ -38,15 +48,18 @@ function App() {
       </div>
 
       <div className="form">
-        <input type='text' value={input}></input>
-        <button>
+        <input type='text' value={input} onChange={handleChange}></input>
+        <button onClick={()=>addItem()}>
           <span>ADD</span>
         </button>
       </div>
-      <div>
-        <ul>
-        
-        </ul>
+
+      <div className="todolist">  
+      {items.map((item)=> {
+        const {_id, name, completed} = item
+        return  <TodoItem name={name} id={_id} completed={completed} setItems={setItems}/>   
+      })}
+     
       </div>
     </div>
   
